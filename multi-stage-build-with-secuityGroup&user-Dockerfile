@@ -1,0 +1,42 @@
+# -------- Stage 1: Builder --------
+FROM node:23.11.0-alpine3.21 AS builder
+
+WORKDIR /home/build/
+
+# Copy and install dependencies
+COPY package*.json . 
+RUN npm install
+
+# Copy source files and build
+COPY . .
+RUN npm run build
+
+# -------- Stage 2: Runner --------
+FROM node:23.11.0-alpine3.21 AS runner
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S user_rakesh -G appgroup
+
+WORKDIR /home/my-app/
+
+# Copy only necessary files from builder
+COPY --from=builder /home/build/dist ./dist
+COPY --from=builder /home/build/package*.json ./
+
+# Install only production dependencies
+RUN npm install --omit=dev
+
+# Set permissions and switch to non-root user
+RUN chown -R user_rakesh:appgroup /home/my-app
+USER user_rakesh
+
+EXPOSE 3000
+
+CMD [ "npm", "start" ]
+
+
+
+# 🔐 Why This is Good:
+# Creates user_rakesh under group appgroup
+# Gives ownership of working dir to that user
+# Prevents running server as root inside container (best practice)
