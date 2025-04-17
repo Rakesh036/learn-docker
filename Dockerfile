@@ -1,20 +1,15 @@
-FROM ubuntu
-
-
-RUN apt-get update
-RUN apt install -y curl
-
-
-RUN curl -sL https://deb.nodesource.com/setup_23.x -o /tmp/nodesource_setup.sh
-RUN bash /tmp/nodesource_setup.sh
-RUN apt install -y nodejs
-
-
-
-# copy source code to docker image
-COPY index.js /home/app/index.js
-COPY package-lock.json /home/app/package-lock.json
-COPY package.json /home/app/package.json
+FROM node:23.11.0-alpine3.21
 
 WORKDIR /home/app/
+
+# copy source code to docker image
+COPY package*.json . 
+# the above line copy both package and package-lock file and as we declare working dir so it copy in current
+# location with same name
+
+
+# NOTE: as docker use caching during build image so always copy static file first and changable file later on because when that file change then all layer below that line will rebuild, so to reduce build size, follow this
+
 RUN npm install
+COPY index.js .
+CMD [ "npm","start" ]
