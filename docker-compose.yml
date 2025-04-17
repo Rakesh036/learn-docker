@@ -1,0 +1,18 @@
+name: e-commerce
+
+services:
+  postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydb
+    ports:
+      - '5431:5432'
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+        - '6379:6379'
