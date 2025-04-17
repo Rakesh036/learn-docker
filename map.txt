@@ -1,0 +1,42 @@
+ docker run -it -p 3000:3000 my-app
+ docker run -it -p 3000:3000  -p 3001:9000 -p 8080:3458 my-app
+
+ multiple port mapping
+
+ port1:port2
+
+ where port1 belong to my macbook and port2 belong to container
+
+
+ now when we write EXPOSE 8000 in dockerfile then it means we tell container to write this port for developer future reference that is it may possible that container has several private port but only some port is expose to outer world and for that developer has to write down this, and this line do this
+
+ now when we run docker inspect my-app then output json has "ExposedPorts":{"8000/tcp":{}}
+from this developer need not to go on source code and find manually find it
+
+
+now developer run  `docker run -it -p 3000:8000 my-app`
+
+or `docker run -it -P my-app`
+
+this capital P, automatically mapped port from my macbook to container all exposed port but here is the twist, there is not necessary that my macbook port 8000 is mapped to container 8000, it is automatically assign any port from my macbook to ExposedPorts
+
+
+EXPOSE 8000 9000 5000
+exposed multiple port
+
+or
+EXPOSED 8000-8009
+
+expose all port from 8000 to 8009 (range)
+
+docker run -it -P --rm my-app (when it stop then distroy the container )
+
+kill=shutdown (data not erased)
+rm=distroy the machine (data lost as machine distroy)
+
+ docker run -itd -P --rm my-app
+
+ by adding 'd' flag now when we run this command then it run the container (my sever inside this container)
+ but my terminal not attached with container and i can do anything on my terminal(macbook terminal, need not to create new terminal and put this running terminal aside bcz if we close it then server will stop and due to 'd' flag we need to do this)
+
+ docker ps <-` (enter) will display all container, so copy running container id and run `docker stop id` to stop the container and as --rm flag is given so it destroy the container
